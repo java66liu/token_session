@@ -1,2 +1,5 @@
 # Test coverage results
 coverage/
+
+# MetricFu results
+tmp/
