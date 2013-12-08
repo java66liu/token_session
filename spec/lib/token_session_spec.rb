@@ -16,11 +16,17 @@ describe TokenSession do
   describe '#initialize' do
 
     it 'raises an ArgumentError when the secret is nil' do
-      lambda { TokenSession.new(nil, secret: nil) }.should raise_error(ArgumentError, 'no secret provided for TokenSession')
+      lambda do
+        TokenSession.new(nil, secret: nil)
+      end.should raise_error(ArgumentError,
+        'no secret provided for TokenSession')
     end
 
     it 'raises an ArgumentError when the secret is blank' do
-      lambda { TokenSession.new(nil, secret: '') }.should raise_error(ArgumentError, 'no secret provided for TokenSession')
+      lambda do
+        TokenSession.new(nil, secret: '')
+      end.should raise_error(ArgumentError,
+        'no secret provided for TokenSession')
     end
 
   end
