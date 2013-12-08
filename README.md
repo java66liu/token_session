@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/javallone/token_session.png)](https://travis-ci.org/javallone/token_session)
+
 # THIS GEM IS NOT PRODUCTION READY
 
 I am **not** a security expert, but I know enough to say that I very well may
