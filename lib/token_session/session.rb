@@ -57,7 +57,7 @@ class TokenSession::Session < ::SimpleDelegator
   #
   # @return [Boolean]
   def valid?
-    if @signature.nil?
+    unless @signature
       return false
     end
 

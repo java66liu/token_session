@@ -47,7 +47,7 @@ class TokenSession
     @key = @options.delete(:key)
     @header = @options.delete(:header)
 
-    if @secret.nil? || @secret.empty?
+    if !@secret || @secret.empty?
       raise ArgumentError.new('no secret provided for TokenSession')
     end
   end
