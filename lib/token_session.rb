@@ -21,6 +21,8 @@
 # {Session} for details).
 class TokenSession
 
+  VERSION = '0.0.1'
+
   DEFAULT_OPTIONS = {
     key: 'rack.session',
     header: 'X-Token'

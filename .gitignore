@@ -7,3 +7,6 @@ tmp/
 # Yard output
 .yardoc/
 doc/
+
+# Gem build
+pkg/
