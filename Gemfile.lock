@@ -134,6 +134,7 @@ GEM
       atomic
     timers (1.1.0)
     tzinfo (0.3.38)
+    yard (0.8.7.3)
 
 PLATFORMS
   ruby
@@ -146,3 +147,4 @@ DEPENDENCIES
   rack
   rspec
   simplecov
+  yard

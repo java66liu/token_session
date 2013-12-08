@@ -3,3 +3,7 @@ coverage/
 
 # MetricFu results
 tmp/
+
+# Yard output
+.yardoc/
+doc/
