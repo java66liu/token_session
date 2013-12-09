@@ -7,9 +7,9 @@
 #
 # Unlike typical session middlewares, the session content is not automatically
 # stored or sent to the user. It is the responsibility of the developer to send
-# the token to the client (by calling the {#to_s} method). The content of the
-# session is in no way hidden from the client (the token is just the session
-# data in JSON). It is however signed to prevent clients from forging a
+# the token to the client (by calling the {Session#to_s} method). The content
+# of the session is in no way hidden from the client (the token is just the
+# session data in JSON). It is however signed to prevent clients from forging a
 # session.
 #
 # By default, the client will have to send the session token back to the server
@@ -68,7 +68,7 @@ class TokenSession
   # Create the {Session} instance for a request
   #
   # Creates the session from the provided request header. The session will be
-  # reset if it is not valid (see the {Session#valid?} and {Session.reset!}
+  # reset if it is not valid (see the {Session#valid?} and {Session#reset!}
   # methods for more detail).
   #
   # @param env [Hash] Rack request environment
