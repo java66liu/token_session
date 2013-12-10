@@ -1,6 +1,7 @@
 require 'delegate'
 require 'openssl'
 require 'json'
+require 'date'
 
 # Session object for the TokenSession
 #
@@ -13,8 +14,11 @@ class TokenSession::Session < ::SimpleDelegator
 
   SIGNATURE_KEY = :__sig
 
+  CREATED_KEY = :__created
+
   DEFAULT_OPTIONS = {
-    digest: 'sha1'
+    digest: 'sha1',
+    exire_after: nil
   }
 
   # A new instance of Session
@@ -24,6 +28,8 @@ class TokenSession::Session < ::SimpleDelegator
   # @option options [String] :secret Required secret key used to sign tokens
   # @option options [String] :digest OpenSSL digest algorithm name to use for
   #   signing
+  # @option options [Number] :expire_after (nil) Maximum age of a token in
+  #   seconds. Disabled when set to nil.
   def initialize(token=nil, options={})
     super begin
       JSON.parse(token || '', symbolize_names: true)
@@ -34,7 +40,12 @@ class TokenSession::Session < ::SimpleDelegator
     options = self.class::DEFAULT_OPTIONS.merge(options)
     @secret = options[:secret]
     @digest = options[:digest]
+    @expire_after = options[:expire_after]
     @signature = self.delete(self.class::SIGNATURE_KEY)
+
+    if @expire_after && self.has_key?(self.class::CREATED_KEY)
+      @created = DateTime.parse(self.delete(self.class::CREATED_KEY)).to_time
+    end
   end
 
   # Clears all data from the session
@@ -44,9 +55,25 @@ class TokenSession::Session < ::SimpleDelegator
   end
 
   # Generates the HMAC signature for the current session data
+  #
+  # @return [String]
   def signature
     data = JSON.generate(self)
     OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new(@digest), @secret, data)
+  end
+
+  # Check if the session token has expired
+  #
+  # Returns false if no expire_after option was provided or if the session data
+  # was created more than expire_after seconds ago.
+  #
+  # @return [Boolean]
+  def expired?
+    if @expire_after
+      (Time.now - @created) > @expire_after
+    else
+      false
+    end
   end
 
   # Check the validity of the session data
@@ -61,7 +88,7 @@ class TokenSession::Session < ::SimpleDelegator
       return false
     end
 
-    Rack::Utils.secure_compare(self.signature, @signature)
+    Rack::Utils.secure_compare(self.signature, @signature) && !expired?
   end
 
   # Convert the session data to a string

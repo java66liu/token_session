@@ -8,8 +8,12 @@ describe 'TokenSession integration' do
     }
   end
 
+  let(:expire_after) do
+    nil
+  end
+
   let(:middleware) do
-    TokenSession.new(app, secret: 'TEST SECRET')
+    TokenSession.new(app, secret: 'TEST SECRET', expire_after: expire_after)
   end
 
   let(:request) do
@@ -20,7 +24,9 @@ describe 'TokenSession integration' do
     request.get('http://example.com/', 'X-Token' => token.to_s)
   end
 
-  let(:token) { TokenSession::Session.new(nil, secret: 'TEST SECRET') }
+  let(:token) do
+    TokenSession::Session.new(nil, secret: 'TEST SECRET')
+  end
 
   subject do
     response.headers['rack.session']
@@ -58,10 +64,31 @@ describe 'TokenSession integration' do
 
   context 'invalid session data is provided' do
 
-    let(:token) { TokenSession::Session.new(nil, secret: 'INVALID SECRET') }
+    let(:token) do
+      TokenSession::Session.new(nil, secret: 'INVALID SECRET')
+    end
 
     before(:each) do
       token[:test] = 'example'
+    end
+
+    it_behaves_like :a_token_session
+
+    it { should_not == { test: 'example' } }
+
+    it { should == {} }
+
+  end
+
+  context 'an expired token is provided' do
+
+    let(:expire_after) do
+      60
+    end
+
+    before(:each) do
+      token[:test] = 'example'
+      token[TokenSession::Session::CREATED_KEY] = (Time.now - 120).to_s
     end
 
     it_behaves_like :a_token_session
