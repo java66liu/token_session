@@ -71,9 +71,9 @@ class TokenSession::Session < ::SimpleDelegator
 
   # Check the validity of the session data
   #
-  # Returns true if the session is signed and that signature is valid. A newly
-  # created session will be marked as invalid (since it was not created with a
-  # signature).
+  # Returns true if the session is signed, the signature is valid, and it has
+  # not expired. A newly created session will be marked as invalid (since it
+  # was not created with a signature).
   #
   # @return [Boolean]
   def valid?
