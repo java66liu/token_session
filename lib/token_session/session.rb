@@ -31,21 +31,14 @@ class TokenSession::Session < ::SimpleDelegator
   # @option options [Number] :expire_after (nil) Maximum age of a token in
   #   seconds. Disabled when set to nil.
   def initialize(token=nil, options={})
-    super begin
-      JSON.parse(token || '', symbolize_names: true)
-    rescue JSON::ParserError
-      {}
-    end
+    super parse_token(token)
 
-    options = self.class::DEFAULT_OPTIONS.merge(options)
+    options = DEFAULT_OPTIONS.merge(options)
     @secret = options[:secret]
     @digest = options[:digest]
     @expire_after = options[:expire_after]
-    @signature = self.delete(self.class::SIGNATURE_KEY)
 
-    if @expire_after && self.has_key?(self.class::CREATED_KEY)
-      @created = DateTime.parse(self.delete(self.class::CREATED_KEY)).to_time
-    end
+    extract_token_data
   end
 
   # Clears all data from the session
@@ -101,6 +94,22 @@ class TokenSession::Session < ::SimpleDelegator
   # @return [String]
   def to_s
     JSON.generate(self.merge(SIGNATURE_KEY => self.signature))
+  end
+
+  private
+
+  def parse_token(token)
+    JSON.parse(token || '', symbolize_names: true)
+  rescue JSON::ParserError
+    {}
+  end
+
+  def extract_token_data
+    @signature = self.delete(SIGNATURE_KEY)
+
+    if @expire_after && self.has_key?(CREATED_KEY)
+      @created = DateTime.parse(self.delete(CREATED_KEY)).to_time
+    end
   end
 
 end

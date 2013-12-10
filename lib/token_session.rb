@@ -44,7 +44,7 @@ class TokenSession
   def initialize(app, options={})
     @app = app
 
-    @options = self.class::DEFAULT_OPTIONS.merge(options)
+    @options = DEFAULT_OPTIONS.merge(options)
     @secret = @options[:secret]
     @key = @options.delete(:key)
     @header = @options.delete(:header)
